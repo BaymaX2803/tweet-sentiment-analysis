@@ -11,6 +11,19 @@ services:
       - "host.docker.internal:host-gateway"
     networks:
       - sentiment-net
+    
+  frontend:
+    build: ./frontend
+    ports:
+      - "8501:8501"
+    volumes:
+      - ./frontend:/app
+    depends_on:
+      - backend
+    environment:
+      - BACKEND_URL=http://backend:8000
+    networks:
+      - sentiment-net
 
 networks:
   sentiment-net:
