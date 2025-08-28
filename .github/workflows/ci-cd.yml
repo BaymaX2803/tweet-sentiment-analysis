@@ -33,15 +33,19 @@ jobs:
         run: |
           timeout 60 bash -c 'until curl -f http://localhost:11434/api/tags; do sleep 2; done'
 
-      - name: Pull a lightweight model for testing
+      - name: Pull model for testing
         run: |
-          curl -X POST http://localhost:11434/api/pull -d '{"name": "tinyllama:latest"}'
-          # Wait for model to be pulled
-          sleep 30
+          # Pull mistral (same as local development)
+          curl -X POST http://localhost:11434/api/pull -d '{"name": "mistral:latest"}'
+          # Wait for model to be fully pulled and loaded (mistral takes longer)
+          sleep 120
+          # Verify model is available
+          curl http://localhost:11434/api/tags
 
       - name: Set environment variables for tests
         run: |
           echo "OLLAMA_HOST=http://localhost:11434" >> $GITHUB_ENV
+          echo "TEST_MODEL=mistral:latest" >> $GITHUB_ENV
 
       - name: Run tests
         run: pytest tests/ -v
