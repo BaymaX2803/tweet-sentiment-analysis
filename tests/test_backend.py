@@ -1,3 +1,10 @@
+# tests/test_backend.py
+import sys
+import os
+
+# Add the parent directory to the Python path so we can import from backend
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 from fastapi.testclient import TestClient
 from backend.main import app
 
@@ -54,4 +61,3 @@ def test_missing_model():
     assert isinstance(data["detail"], list)
     assert data["detail"][0]["loc"] == ["body", "model"]
     assert data["detail"][0]["msg"] == "Field required"
-

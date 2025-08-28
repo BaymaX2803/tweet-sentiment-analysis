@@ -9,6 +9,12 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+    services:
+      ollama:
+        image: ollama/ollama:latest
+        ports:
+          - 11434:11434
+        options: --name ollama-container
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
@@ -23,8 +29,22 @@ jobs:
           pip install -r backend/requirements.txt
           pip install pytest
 
+      - name: Wait for Ollama to be ready
+        run: |
+          timeout 60 bash -c 'until curl -f http://localhost:11434/api/tags; do sleep 2; done'
+
+      - name: Pull a lightweight model for testing
+        run: |
+          curl -X POST http://localhost:11434/api/pull -d '{"name": "tinyllama:latest"}'
+          # Wait for model to be pulled
+          sleep 30
+
+      - name: Set environment variables for tests
+        run: |
+          echo "OLLAMA_HOST=http://localhost:11434" >> $GITHUB_ENV
+
       - name: Run tests
-        run: pytest tests/
+        run: pytest tests/ -v
 
   docker:
     runs-on: ubuntu-latest
@@ -49,6 +69,8 @@ jobs:
           context: ./backend
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/sentiment-backend:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
       - name: Build and push frontend image
         uses: docker/build-push-action@v5
@@ -56,3 +78,5 @@ jobs:
           context: ./frontend
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/sentiment-frontend:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max

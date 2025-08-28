@@ -1,5 +1,5 @@
 from fastapi import FastAPI, HTTPException
-from models import Tweet
+from .models import Tweet
 import ollama
 import json
 import logging
