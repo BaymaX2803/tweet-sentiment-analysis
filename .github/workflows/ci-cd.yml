@@ -23,6 +23,12 @@ jobs:
           pip install -r backend/requirements.txt
           pip install pytest
 
+      - name: Install Ollama
+        run: |
+          curl -fsSL https://ollama.com/install.sh | sh
+          ollama serve &
+          sleep 10  # wait for Ollama to start
+
       - name: Run tests
         run: pytest tests/
 
