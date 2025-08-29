@@ -1,0 +1,41 @@
+version: '3.8'
+
+services:
+  backend:
+    build: 
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    # Mount only source code, not the entire /app directory
+    volumes:
+      - ./backend:/app/src
+    environment:
+      - OLLAMA_HOST=http://host.docker.internal:11434
+      - PYTHONPATH=/app/src
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    networks:
+      - sentiment-net
+    # Add reload for development
+    command: ["uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
+    
+  frontend:
+    build: 
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "8501:8501"
+    volumes:
+      - ./frontend:/app/src
+    depends_on:
+      - backend
+    environment:
+      - BACKEND_URL=http://backend:8000
+      - PYTHONPATH=/app/src
+    networks:
+      - sentiment-net
+
+networks:
+  sentiment-net:
+    driver: bridge
