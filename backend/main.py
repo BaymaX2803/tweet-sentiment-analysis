@@ -7,7 +7,7 @@ import logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# print("Hello")
+# print("Hello world")
 
 app = FastAPI(title="LLM Sentiment Analyzer")
 
