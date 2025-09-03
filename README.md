@@ -32,6 +32,12 @@ A full-stack application for sentiment analysis using Large Language Models (LLM
 ├── docker-compose.yml   # Multi-service orchestration
 └── .github/workflows/ci-cd.yml # CI/CD pipeline
 ```
+---
+## Workflow Diagram
+
+<img src="Workflow.png" height="400" width="350" title="Workflow diagram">
+
+Here's a detailed workflow diagram of the app.
 
 ---
 
